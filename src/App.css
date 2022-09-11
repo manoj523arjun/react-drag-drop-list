@@ -1,0 +1,34 @@
+.drag-list-container {
+  width: 400px;
+}
+
+.drag-list-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.drag-list-item.drag-list-item-selected {
+  background-color: #e5e5e5;
+  border-bottom: 1px solid #ffffff;
+}
+
+.drag-list-item-dragging {
+  opacity: 0.5;
+}
+
+.draggable-move-container {
+  display: inline-block;
+  position: fixed;
+  cursor: move;
+  z-index: 9;
+}
+
+.drop-container {
+  width: 200px;
+  height: 200px;
+  background-color: grey;
+  margin: 24px;
+}
+
+.drop-container-hover {
+  opacity: 0.75;
+}
