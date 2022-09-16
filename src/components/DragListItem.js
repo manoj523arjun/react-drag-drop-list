@@ -32,13 +32,11 @@ const DragListItem = ({
     if (onMouseUpHandler) {
       onMouseUpHandler(e, selectedList);
     }
-    // setTimeout(() => {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', onMouseUp);
 
     document.removeEventListener('ontouchmove', onDrag);
     document.removeEventListener('ontouchend', onMouseUp);
-    // }, 100);
   };
 
   const onMouseDown = useCallback(
