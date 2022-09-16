@@ -35,6 +35,9 @@ const DragListItem = ({
     // setTimeout(() => {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', onMouseUp);
+
+    document.removeEventListener('ontouchmove', onDrag);
+    document.removeEventListener('ontouchend', onMouseUp);
     // }, 100);
   };
 
@@ -47,6 +50,9 @@ const DragListItem = ({
         }
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', onMouseUp);
+
+        document.addEventListener('ontouchmove', onDrag);
+        document.addEventListener('ontouchend', onMouseUp);
       }
     },
     [onMouseDownHandler]
