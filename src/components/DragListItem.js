@@ -62,6 +62,7 @@ const DragListItem = ({
       className={`drag-list-item${isSelected ? ' drag-list-item-selected' : ''}`}
       onClick={onRowClick}
       onMouseDown={onMouseDown}
+      onTouchStart={onMouseDown}
     >
       {listItem[labelTextPropName]}
     </div>
