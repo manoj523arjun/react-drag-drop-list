@@ -56,13 +56,24 @@ const DragListItem = ({
     [onMouseDownHandler]
   );
 
+  const onTouchStartHandler = () => {
+    if (onMouseDownHandler) {
+      onMouseDownHandler(e);
+    }
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', onMouseUp);
+
+    document.addEventListener('ontouchmove', onDrag);
+    document.addEventListener('ontouchend', onMouseUp);
+  }
+
   return (
     <div
       id={listItem[labelIdPropName]}
       className={`drag-list-item${isSelected ? ' drag-list-item-selected' : ''}`}
       onClick={onRowClick}
       onMouseDown={onMouseDown}
-      onTouchStart={onMouseDown}
+      onTouchStart={onTouchStartHandler}
     >
       {listItem[labelTextPropName]}
     </div>
