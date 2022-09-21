@@ -12,8 +12,6 @@ const DragListItem = ({
 }) => {
   const [isSelected, setSelected] = useState();
 
-  const [isTouchStart, setTouchStart] = useState(false);
-
   const onRowClick = useCallback(() => {
     setSelected(!isSelected);
     // if (selectedList[listItem[labelIdPropName]]) {
@@ -59,7 +57,6 @@ const DragListItem = ({
   );
 
   const onTouchStartHandler = (e) => {
-    setTouchStart(true);
     if (onMouseDownHandler) {
       onMouseDownHandler(e);
     }
@@ -79,7 +76,7 @@ const DragListItem = ({
       onTouchStart={onTouchStartHandler}
       
     >
-      {listItem[labelTextPropName]} {isTouchStart === "TOUCH_MOVE" ? "move" : isTouchStart === true ? "start" : "end"}
+      {listItem[labelTextPropName]}
     </div>
   );
 };
