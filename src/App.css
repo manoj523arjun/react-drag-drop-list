@@ -1,3 +1,7 @@
+body {
+  overscroll-behavior-y: contain;
+}
+
 .drag-list-container {
   width: 400px;
 }
