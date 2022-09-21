@@ -37,13 +37,13 @@ const DragListItem = ({
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', onMouseUp);
 
-    // document.removeEventListener('ontouchmove', onDrag);
-    // document.removeEventListener('ontouchend', onMouseUp);
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('touchend', onMouseUp);
   };
 
   const onMouseDown = useCallback(
     (e) => {
-      e.preventDefault();
+      if(e.preventDefault) e.preventDefault();
       if (e.nativeEvent.which === 1 || e.button === 0) {
         if (onMouseDownHandler) {
           onMouseDownHandler(e);
@@ -51,8 +51,8 @@ const DragListItem = ({
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', onMouseUp);
 
-        document.addEventListener('ontouchmove', onDrag);
-        document.addEventListener('ontouchend', onMouseUp);
+        document.addEventListener('touchmove', onDrag);
+        document.addEventListener('touchend', onMouseUp);
       }
     },
     [onMouseDownHandler]
@@ -60,14 +60,14 @@ const DragListItem = ({
 
   const onTouchStartHandler = (e) => {
     setTouchStart(true);
-    // if (onMouseDownHandler) {
-    //   onMouseDownHandler(e);
-    // }
-    // document.addEventListener('mousemove', onDrag);
-    // document.addEventListener('mouseup', onMouseUp);
+    if (onMouseDownHandler) {
+      onMouseDownHandler(e);
+    }
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', onMouseUp);
 
-    // document.addEventListener('ontouchmove', onDrag);
-    // document.addEventListener('ontouchend', onMouseUp);
+    document.addEventListener('touchmove', onDrag);
+    document.addEventListener('touchend', onMouseUp);
   }
 
   return (
@@ -76,10 +76,8 @@ const DragListItem = ({
       className={`drag-list-item${isSelected ? ' drag-list-item-selected' : ''}`}
       onClick={onRowClick}
       onMouseDown={onMouseDown}
-      // onTouchStart={onTouchStartHandler}
       onTouchStart={onTouchStartHandler}
-      onTouchMove={() => setTouchStart("TOUCH_MOVE")}
-      onTouchEnd={() => setTouchStart(false)}
+      
     >
       {listItem[labelTextPropName]} {isTouchStart === "TOUCH_MOVE" ? "move" : isTouchStart === true ? "start" : "end"}
     </div>

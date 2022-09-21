@@ -53,7 +53,15 @@ const DragListContainer = forwardRef(
     };
 
     const onMouseDownHandler = (e) => {
-      const { pageX, pageY } = e;
+      let pageX, pageY;
+      if (e.type.includes("touch")) {
+        const { touches } = e;
+        pageX = touches[0].pageX;
+        pageY = touches[0].pageY;
+      } else {
+        pageX = e.pageX;
+        pageY = e.pageY;
+      }
       initPosRef.current = { pageX, pageY };
     };
 
@@ -66,7 +74,16 @@ const DragListContainer = forwardRef(
     };
 
     const onDragHandler = (e, selectedListData) => {
-      const { pageX, pageY } = e;
+      let pageX, pageY;
+      if (e.type.includes("touch")) {
+        const { touches } = e;
+        pageX = touches[0].pageX;
+        pageY = touches[0].pageY;
+      } else {
+        pageX = e.pageX;
+        pageY = e.pageY;
+      }
+
       if (initPosRef.current) {
         const { pageX: initPageX, pageY: initPageY } = initPosRef.current;
         if (
@@ -87,7 +104,6 @@ const DragListContainer = forwardRef(
       if (onDragging) {
         onDragging(e);
       }
-      const mostNestedElement = document.elementFromPoint(e.clientX, e.clientY);
     };
 
     const renderDragListItem = useMemo(() => {
