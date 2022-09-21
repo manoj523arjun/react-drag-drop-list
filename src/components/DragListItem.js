@@ -12,6 +12,8 @@ const DragListItem = ({
 }) => {
   const [isSelected, setSelected] = useState();
 
+  const [isTouchStart, setTouchStart] = useState(false);
+
   const onRowClick = useCallback(() => {
     setSelected(!isSelected);
     // if (selectedList[listItem[labelIdPropName]]) {
@@ -35,8 +37,8 @@ const DragListItem = ({
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', onMouseUp);
 
-    document.removeEventListener('ontouchmove', onDrag);
-    document.removeEventListener('ontouchend', onMouseUp);
+    // document.removeEventListener('ontouchmove', onDrag);
+    // document.removeEventListener('ontouchend', onMouseUp);
   };
 
   const onMouseDown = useCallback(
@@ -56,15 +58,16 @@ const DragListItem = ({
     [onMouseDownHandler]
   );
 
-  const onTouchStartHandler = () => {
-    if (onMouseDownHandler) {
-      onMouseDownHandler(e);
-    }
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', onMouseUp);
+  const onTouchStartHandler = (e) => {
+    setTouchStart(true);
+    // if (onMouseDownHandler) {
+    //   onMouseDownHandler(e);
+    // }
+    // document.addEventListener('mousemove', onDrag);
+    // document.addEventListener('mouseup', onMouseUp);
 
-    document.addEventListener('ontouchmove', onDrag);
-    document.addEventListener('ontouchend', onMouseUp);
+    // document.addEventListener('ontouchmove', onDrag);
+    // document.addEventListener('ontouchend', onMouseUp);
   }
 
   return (
@@ -74,10 +77,11 @@ const DragListItem = ({
       onClick={onRowClick}
       onMouseDown={onMouseDown}
       // onTouchStart={onTouchStartHandler}
-      onTouchStart={() => alert("this is touch start")}
-      onTouchEnd={() => alert("this is touch end")}
+      onTouchStart={onTouchStartHandler}
+      onTouchMove={() => setTouchStart("TOUCH_MOVE")}
+      onTouchEnd={() => setTouchStart(false)}
     >
-      {listItem[labelTextPropName]}
+      {listItem[labelTextPropName]} {isTouchStart === "TOUCH_MOVE" ? "move" : isTouchStart === true ? "start" : "end"}
     </div>
   );
 };
