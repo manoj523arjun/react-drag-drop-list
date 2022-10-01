@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useMemo, useEffect } from 'react';
 import DragListItem from './DragListItem';
 
 const DragListContainer = forwardRef(
@@ -10,16 +10,29 @@ const DragListContainer = forwardRef(
       renderDragTextComponent,
       onDragStart,
       onDragStop,
-      onDragging
+      onDragging,
+      renderDragHandle = null,
+      selectedListItems
     },
     ref
   ) => {
+    const convertArrToObj = () => {
+      return selectedListItems.reduce((initObj, selectedItem) => {
+        initObj[selectedItem[labelIdPropName]] = selectedItem;
+        return initObj;
+      }, {});
+    };
+
     const dragContainerRef = useRef(null);
-    const [selectedList, setSelectedList] = useState({});
+    const [selectedList, setSelectedList] = useState(convertArrToObj());
     const [pageCoOrdinates, setPageCoOrdinates] = useState(null);
     const initPosRef = useRef(null);
     const isDragStart = useRef(false);
     const dropElemContainer = useRef(null);
+
+    useEffect(() => {
+      setSelectedList(convertArrToObj());
+    }, [selectedListItems]);
 
     useImperativeHandle(ref, () => ({
       getDragPosition: () => {
@@ -65,15 +78,22 @@ const DragListContainer = forwardRef(
       initPosRef.current = { pageX, pageY };
     };
 
-    const onMouseUpHandler = (e, selectedListData) => {
+    const onMouseUpHandler = async (e, selectedListData, currentDrgaItem) => {
+      const prevSelectedData = { ...selectedListData };
+      // if (currentDrgaItem && !dropElemContainer.current) {
+      //   delete prevSelectedData[currentDrgaItem[labelIdPropName]];
+      //   await setSelectedList(prevSelectedData);
+      // }
+      if (isDragStart.current && onDragStop && dropElemContainer.current) {
+        onDragStop(dropElemContainer.current, updatedSelectedList(prevSelectedData));
+      }
+      dropElemContainer.current = null;
       initPosRef.current = null;
       isDragStart.current = false;
       setPageCoOrdinates(null);
-      onDragStop(dropElemContainer.current, updatedSelectedList(selectedListData));
-      dropElemContainer.current = null;
     };
 
-    const onDragHandler = (e, selectedListData) => {
+    const onDragHandler = async (e, selectedListData, currentDrgaItem) => {
       let pageX, pageY;
       if (e.type.includes("touch")) {
         const { touches } = e;
@@ -92,7 +112,12 @@ const DragListContainer = forwardRef(
         ) {
           isDragStart.current = true;
           if (onDragStart) {
-            onDragStart(e, isDragStart.current, updatedSelectedList(selectedListData));
+            const prevSelectedData = { ...selectedListData };
+            // if (currentDrgaItem) {
+            //   prevSelectedData[currentDrgaItem[labelIdPropName]] = { isDragging: true, ...currentDrgaItem };
+            //   await setSelectedList(prevSelectedData);
+            // }
+            onDragStart(e, isDragStart.current, updatedSelectedList(prevSelectedData));
           }
         }
       }
@@ -119,11 +144,13 @@ const DragListContainer = forwardRef(
             onMouseDownHandler={onMouseDownHandler}
             onMouseUpHandler={onMouseUpHandler}
             onDragHandler={onDragHandler}
+            isDragging={isDragStart.current}
+            renderDragHandle={renderDragHandle}
+            isListItemSelected={selectedList[listItem[labelIdPropName]]}
           />
         );
       });
-    }, [listData]);
-
+    }, [listData, selectedList, isDragStart.current]);
     return (
       <>
         <div ref={dragContainerRef} className="drag-list-container">

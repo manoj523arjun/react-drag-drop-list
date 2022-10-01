@@ -38,6 +38,8 @@ const App = () => {
     );
   };
 
+  const renderDragHandle = <div style={{padding: 2}}>Drag here</div>;
+
   const onDragStart = (event, isDraggingStart, selectedList) => {
     console.log('drag start', selectedList);
     setDropContainerData(selectedList);
@@ -45,15 +47,13 @@ const App = () => {
 
   const onDragStop = (dropElement, selectedItems) => {
     console.log('drag stop', dropElement, selectedItems);
-    setMovedItems(dropElement ? selectedItems : []);
+    setMovedItems(selectedItems);
   };
 
   const onDragging = (e) => {
     const { pageX, pageY } = e;
     setPageCords({ pageX, pageY });
   };
-
-  // console.log(dragContainerRef.current, "dragContainerRef");
 
   return (
     <>
@@ -66,6 +66,8 @@ const App = () => {
         onDragStop={onDragStop}
         onDragging={onDragging}
         ref={dragContainerRef}
+        renderDragHandle={renderDragHandle}
+        selectedListItems={movedItems}
       />
       <DropContainer dragContainerRef={dragContainerRef} pageCOrds={pageCOrds}>
         <>{!!movedItems.length && movedItems.map((item) => item.text)}</>

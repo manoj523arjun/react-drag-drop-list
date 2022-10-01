@@ -8,36 +8,44 @@ const DragListItem = ({
   selectedList,
   onMouseDownHandler,
   onMouseUpHandler,
-  onDragHandler
+  onDragHandler,
+  isDragging,
+  renderDragHandle
 }) => {
-  const [isSelected, setSelected] = useState();
+  const [isSelected, setSelected] = useState(!!selectedList[listItem[labelIdPropName]]);
+  const draggableRef = useRef(false);
 
-  const onRowClick = useCallback(() => {
-    setSelected(!isSelected);
-    // if (selectedList[listItem[labelIdPropName]]) {
-    //     delete selectedList[listItem[labelIdPropName]];
-    // } else {
-    //     selectedList[listItem[labelIdPropName]] = listItem;
-    // }
-    onRowClickHandler(!isSelected, listItem, listItem[labelIdPropName]);
-  }, [isSelected]);
+  // useEffect(() => {
+  //   setSelected(selectedList[listItem[labelIdPropName]]);
+  // }, [selectedList[listItem[labelIdPropName]]]);
 
-  const onDrag = (e) => {
+  const onRowClick = useCallback((internalSelectItem = null) => {
+    const isSelectedOnCLick = internalSelectItem !== null ? !isSelected : internalSelectItem;
+    setSelected(isSelectedOnCLick);
+    onRowClickHandler(isSelectedOnCLick, listItem, listItem[labelIdPropName]);
+  }, [isSelected, selectedList, onRowClickHandler]);
+
+  const onDrag = useCallback((e) => {
     if (onDragHandler) {
       onDragHandler(e, selectedList);
     }
-  };
+  }, [selectedList]);
 
-  const onMouseUp = (e) => {
+  const onMouseUp = useCallback((e) => {
     if (onMouseUpHandler) {
       onMouseUpHandler(e, selectedList);
+    }
+    if (draggableRef.current) {
+      setSelected(false);
+      onRowClickHandler(false, listItem, listItem[labelIdPropName]);
+      draggableRef.current = false;
     }
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', onMouseUp);
 
     document.removeEventListener('touchmove', onDrag);
     document.removeEventListener('touchend', onMouseUp);
-  };
+  }, [selectedList, onMouseUpHandler]);
 
   const onMouseDown = useCallback(
     (e) => {
@@ -51,6 +59,10 @@ const DragListItem = ({
 
         document.addEventListener('touchmove', onDrag);
         document.addEventListener('touchend', onMouseUp);
+        if (!draggableRef.current && !selectedList[listItem[labelIdPropName]]) {
+          onRowClick(true);
+          draggableRef.current = true;
+        }
       }
     },
     [onMouseDownHandler]
@@ -67,15 +79,36 @@ const DragListItem = ({
     document.addEventListener('touchend', onMouseUp);
   }
 
+  const renderDragHandleContainer = () => {
+    if (renderDragHandle) {
+      return (
+        <div
+          onMouseDown={onMouseDown}
+          onTouchStart={onTouchStartHandler}
+        >
+          {renderDragHandle}
+        </div>
+      )
+    }
+    return <></>;
+  }
+
+  const attachMouseDownEvents = {};
+
+  if (!renderDragHandle) {
+    attachMouseDownEvents.onMouseDown = onMouseDown;
+    attachMouseDownEvents.onTouchStart = onTouchStartHandler;
+  }
+
   return (
     <div
       id={listItem[labelIdPropName]}
-      className={`drag-list-item${isSelected ? ' drag-list-item-selected' : ''}`}
+      className={`drag-list-item${!!selectedList[listItem[labelIdPropName]] ? ` drag-list-item-selected${isDragging ? ' drag-list-item-dragging' : ''}` : ''}`}
       onClick={onRowClick}
-      onMouseDown={onMouseDown}
-      onTouchStart={onTouchStartHandler}
+      { ...attachMouseDownEvents }
       
     >
+      {renderDragHandleContainer()}
       {listItem[labelTextPropName]}
     </div>
   );
